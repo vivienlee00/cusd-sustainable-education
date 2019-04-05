@@ -42,20 +42,20 @@ data = [ dict(
         text = df['text'],
         mode = 'markers',
         marker = dict(
-            size = 8,
+            size = 20,
             opacity = 1,
             reversescale = True,
-            symbol = 'diamond',
+            symbol = 'diamond-wide-dot',
             line = dict(
                 width=1,
                 color='rgba(102, 102, 102)'
             ),
-            color = 'rgb(0, 180, 0)',
+            color = 'rgb(0, 200, 0)',
 
         ))]
 
 layout = dict(
-        title = 'CUSD International - Sustainable Education',
+        title = 'CUSD - Sustainable Education',
         width = 1400,
         height = 700,
         geo = dict(
