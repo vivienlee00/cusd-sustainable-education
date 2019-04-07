@@ -30,7 +30,7 @@ for css in external_stylesheets:
 
 server = app.server
 
-df['text'] = '<b>' + df['project'].astype(str) + '</b><br><br>' # + df['desc'].astype(str)
+df['text'] = '<b>' + df['project'].astype(str) + '</b>' # + df['desc'].astype(str)
 
 
 data = [ dict(
@@ -39,6 +39,7 @@ data = [ dict(
         lon = df['long'],
         lat = df['lat'],
         hoverinfo = 'text',
+        customdata = df['project'],
         text = df['text'],
         mode = 'markers',
         marker = dict(
@@ -56,8 +57,8 @@ data = [ dict(
 
 layout = dict(
         title = 'CUSD - Sustainable Education',
-        width = 1400,
-        height = 700,
+        width = 700,
+        height = 450,
         geo = dict(
             scope='world',
             projection=dict( type='equirectangular' ),
@@ -72,15 +73,76 @@ layout = dict(
     )
 
 fig = dict( data=data, layout=layout)
+STARTING_PROJECT = 'Sustainable Education Nepal'
+STARTING_DESC = df.loc[df['project'] == STARTING_PROJECT]['desc'].iloc[0]
+STARTING_IMG = "https://cusd.cornell.edu/images/project-photos/snn-2-ff43fd96.jpg"
+
 
 app.layout  = html.Div(children=[
 
+                dcc.Graph(id='graph', figure=fig, style=dict(float='left')),
 
-                dcc.Graph(id='graph', figure=fig),
+                html.Div(children= [
+                    html.H5(STARTING_PROJECT,
+                    id='project_name', style=dict(marginBottom='10px',textAlign='left',fontSize='25px')),
+
+                    html.P(STARTING_DESC,
+                    id='description',
+                    style=dict(fontSize='16px', marginBottom='15px', fontWeight='lighter')),
+
+                    html.Img(id='proj_img', src=STARTING_IMG, style={'width':'320px', 'height':'auto', 'position': 'absolute', 'clip':'rect(0px,500px,350px,0px)'}),
+
+                ], style={'float':'right','width':'320px','margin-right':'390px'})
+
+], style={'backgroundColor':'white','display':'inline'})
 
 
+def dfRowFromHover( hoverData ):
+    ''' Returns row for hover point as a Pandas Series '''
+    if hoverData is not None:
+        if 'points' in hoverData:
+            firstPoint = hoverData['points'][0]
+            if 'pointNumber' in firstPoint:
+                point_number = firstPoint['pointNumber']
+                project_name = str(fig['data'][0]['text'][point_number]).strip()
+                return df.loc[df['project'] == project_name]
+    return pd.Series()
 
-], style={'backgroundColor':'white'})
+@app.callback(
+    dash.dependencies.Output('project_name', 'children'),
+    [dash.dependencies.Input('graph', 'hoverData')])
+def return_chapter_name(hoverData):
+    if hoverData is not None:
+        if 'points' in hoverData:
+            firstPoint = hoverData['points'][0]
+            if 'customdata' in firstPoint:
+                project = firstPoint['customdata']
+                return project
+    return STARTING_PROJECT
+
+@app.callback(
+    dash.dependencies.Output('description', 'children'),
+    [dash.dependencies.Input('graph', 'hoverData')])
+def return_chapter_name(hoverData):
+    if hoverData is not None:
+        if 'points' in hoverData:
+            firstPoint = hoverData['points'][0]
+            if 'customdata' in firstPoint:
+                project = firstPoint['customdata']
+                return df.loc[df['project'] == project]['desc'].iloc[0]
+    return STARTING_DESC
+
+@app.callback(
+    dash.dependencies.Output('proj_img', 'src'),
+    [dash.dependencies.Input('graph', 'hoverData')])
+def return_chapter_name(hoverData):
+    if hoverData is not None:
+        if 'points' in hoverData:
+            firstPoint = hoverData['points'][0]
+            if 'customdata' in firstPoint:
+                project = firstPoint['customdata']
+                return df.loc[df['project'] == project]['img'].iloc[0]
+    return STARTING_IMG
 
 
 #server = app.server
