@@ -92,7 +92,7 @@ app.layout  = html.Div(children=[
 
                     html.Img(id='proj_img', src=STARTING_IMG, style={'width':'320px', 'height':'auto', 'position': 'absolute', 'clip':'rect(0px,500px,350px,0px)'}),
 
-                ], style={'float':'right','width':'320px','margin-right':'390px'})
+                ], style={'float':'left','width':'320px','margin-left':'12px'})
 
 ], style={'backgroundColor':'white','display':'inline'})
 
